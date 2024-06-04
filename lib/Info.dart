@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'form.dart';
-import 'main.dart';
-
 class InfoScreen extends StatelessWidget {
   static const Color backGroundTheme = Color(0xffff8593);
   static const Color contextThemeColor = Color(0xfff9f8fe);
