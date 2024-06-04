@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class BuildForm extends StatefulWidget {
   //در ابتدا براشون state less میزنم تا تهش ببینن چی میشه
-  final Uri _url = Uri.parse('https://lms2.sbu.ac.ir');
+  static Uri _uri = Uri.parse('https://lms2.sbu.ac.ir');
 // Colors:
   static const Color forgotPasswordText = Colors.deepPurple;
   static const Color signInButtonG1 = Color(0xe1961d6b);
@@ -121,19 +121,19 @@ class _BuildFormState extends State<BuildForm> {
                   ),
                 ),
               )),
-          const Positioned(
-              right: 38,
-              left: 48,
-              top: 211,
-              child: Text(
-                'رمزعبور خود را فراموش کرده اید؟',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: BuildForm.forgotPasswordText,
-                    fontSize: 13,
-                    fontFamily: 'Poppins-Medium',
-                    fontWeight: FontWeight.w600),
-              )),
+          // const Positioned(
+          //     right: 38,
+          //     left: 48,
+          //     top: 211,
+          //     child: Text(
+          //       'رمزعبور خود را فراموش کرده اید؟',
+          //       textAlign: TextAlign.center,
+          //       style: TextStyle(
+          //           color: BuildForm.forgotPasswordText,
+          //           fontSize: 13,
+          //           fontFamily: 'Poppins-Medium',
+          //           fontWeight: FontWeight.w600),
+          //     )),
           Positioned(
             top: 290,
             right: widthOfScreen * 0.37,
@@ -222,7 +222,11 @@ class _BuildFormState extends State<BuildForm> {
               top: 425,
               left: widthOfScreen * 0.26,
               child: TextButton(
-                  onPressed: _launchURL,
+                  onPressed: () => setState(
+                        () {
+                          _launchInBrowserView(BuildForm._uri);
+                        },
+                      ),
                   child: const Text(
                     "ورود به سامانه یادگیری مجازی دانشگاه",
                     style: TextStyle(color: Colors.blueAccent, fontSize: 12),
@@ -257,12 +261,9 @@ class _BuildFormState extends State<BuildForm> {
     );
   }
 
-  _launchURL() async {
-    const url = 'https://lms2.sbu.ac.ir';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
+  _launchInBrowserView(Uri url) async {
+    if (!await launchUrl(url, mode: LaunchMode.inAppWebView)) {
+      throw Exception('Could not launch $url');
     }
   }
 }
