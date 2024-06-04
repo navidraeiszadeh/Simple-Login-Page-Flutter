@@ -36,11 +36,6 @@ class LoginPage extends StatelessWidget {
                 Colors.purpleAccent.shade100,
                 Colors.purple.shade100
               ]),
-          //   image: DecorationImage(
-          //   image: AssetImage('images/primaryBg.png'),
-          //   fit: BoxFit.cover,
-          //
-          // )
         ),
         child: Stack(
           children: <Widget>[
@@ -51,7 +46,7 @@ class LoginPage extends StatelessWidget {
                   'دانشجویار',
                   style: TextStyle(
                       fontSize: 22,
-                      //fontFamily: 'Poppins-Medium',
+                      fontFamily: 'Bnazanin',
                       fontWeight: FontWeight.w500,
                       color: Colors.white),
                 )),
