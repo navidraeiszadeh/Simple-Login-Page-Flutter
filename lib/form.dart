@@ -1,10 +1,11 @@
-import 'package:ap_ta_signup/temp.dart';
+import 'dart:io';
+
+import 'package:ap_ta_signup/Info.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BuildForm extends StatefulWidget {
-  //در ابتدا براشون state less میزنم تا تهش ببینن چی میشه
-  static Uri _uri = Uri.parse('https://lms2.sbu.ac.ir');
+  static final Uri _uri = Uri.parse('https://lms2.sbu.ac.ir');
 // Colors:
   static const Color forgotPasswordText = Colors.deepPurple;
   static const Color signInButtonG1 = Color(0xe1961d6b);
@@ -25,18 +26,17 @@ class BuildForm extends StatefulWidget {
 class _BuildFormState extends State<BuildForm> {
   TextEditingController studentID = TextEditingController();
   TextEditingController password = TextEditingController();
-  bool obscure = true, userNameChecker = false, passwordChecker = false;
+  bool obscure = true, userIDChecker = true, passwordChecker = true;
+  String response = '';
 
   @override
   Widget build(BuildContext context) {
     double widthOfScreen = MediaQuery.of(context).size.width;
     double enterButton = widthOfScreen * 0.6;
-    bool isChecked = false;
 
     return SizedBox(
       width: widthOfScreen,
       child: Stack(
-        // mishe be jaye stack az tarkib column va sized box va allignment estefade konim!
         children: <Widget>[
           Positioned(
               left: 40,
@@ -74,8 +74,6 @@ class _BuildFormState extends State<BuildForm> {
                 ),
               )),
           Positioned(
-              // serfan dar soorat estefade az stack mitonim az positioned estefade konim
-              //در ابتدا const باشه
               left: 40,
               top: 125,
               child: SizedBox(
@@ -121,19 +119,35 @@ class _BuildFormState extends State<BuildForm> {
                   ),
                 ),
               )),
-          // const Positioned(
-          //     right: 38,
-          //     left: 48,
-          //     top: 211,
-          //     child: Text(
-          //       'رمزعبور خود را فراموش کرده اید؟',
-          //       textAlign: TextAlign.center,
-          //       style: TextStyle(
-          //           color: BuildForm.forgotPasswordText,
-          //           fontSize: 13,
-          //           fontFamily: 'Poppins-Medium',
-          //           fontWeight: FontWeight.w600),
-          //     )),
+          userIDChecker && passwordChecker
+              ? const Positioned(right: 38, left: 48, top: 211, child: Text(""))
+              : userIDChecker
+                  ? const Positioned(
+                      right: 38,
+                      left: 48,
+                      top: 211,
+                      child: Text(
+                        '!خطا در ورود: رمز وارد شده درست نمی باشد',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: BuildForm.forgotPasswordText,
+                            fontSize: 12,
+                            fontFamily: 'Bnazanin',
+                            fontWeight: FontWeight.w600),
+                      ))
+                  : const Positioned(
+                      right: 38,
+                      left: 48,
+                      top: 211,
+                      child: Text(
+                        'خطا در ورود: شماره دانشجویی وارد شده در سیستم ثبت نشده است. ثبت نام کنید',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: BuildForm.forgotPasswordText,
+                            fontSize: 12,
+                            fontFamily: 'Bnazanin',
+                            fontWeight: FontWeight.w600),
+                      )),
           Positioned(
             top: 290,
             right: widthOfScreen * 0.37,
@@ -166,8 +180,17 @@ class _BuildFormState extends State<BuildForm> {
               top: 340,
               right: widthOfScreen * 0.18,
               child: InkWell(
-                // in ham as avval nemizarim   TODO-> clikable
-                //onTap: ,
+                onTap: () async {
+                  logIn();
+                  if (userIDChecker && passwordChecker) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const InfoScreen(),
+                      ),
+                    );
+                  }
+                },
                 child: Container(
                   width: widthOfScreen * 0.61, // 250
                   height: 50,
@@ -189,11 +212,9 @@ class _BuildFormState extends State<BuildForm> {
                   ),
                   child: Row(
                     children: [
-                      /// as avval avval barash const tariif mikonim
                       const Icon(
                         Icons.navigate_before_rounded,
-                        textDirection: TextDirection
-                            .ltr, // in ro bayad search konim hamoon zaman video gereftan
+                        textDirection: TextDirection.ltr,
                         color: Colors.white,
                       ),
                       SizedBox(width: enterButton * 0.33),
@@ -202,8 +223,8 @@ class _BuildFormState extends State<BuildForm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: 19,
-                            fontFamily: 'Poppins-Medium',
+                            fontSize: 21,
+                            fontFamily: 'Bnazanin',
                             fontWeight: FontWeight.w400),
                       ),
                     ],
@@ -215,12 +236,12 @@ class _BuildFormState extends State<BuildForm> {
               left: 59,
               child: Container(
                 height: 0.5,
-                width: 310,
+                width: 312,
                 color: BuildForm.inputBorder,
               )), // خط جدا کننده وسط
           Positioned(
               top: 425,
-              left: widthOfScreen * 0.26,
+              left: widthOfScreen * 0.33,
               child: TextButton(
                   onPressed: () => setState(
                         () {
@@ -228,8 +249,8 @@ class _BuildFormState extends State<BuildForm> {
                         },
                       ),
                   child: const Text(
-                    "ورود به سامانه یادگیری مجازی دانشگاه",
-                    style: TextStyle(color: Colors.blueAccent, fontSize: 12),
+                    "ورود به سامانه یادگیری مجازی",
+                    style: TextStyle(color: Colors.blueAccent, fontSize: 10),
                   ))),
           Positioned(
               top: 477,
@@ -265,5 +286,32 @@ class _BuildFormState extends State<BuildForm> {
     if (!await launchUrl(url, mode: LaunchMode.inAppWebView)) {
       throw Exception('Could not launch $url');
     }
+  }
+
+  //connect server
+  Future<String> logIn() async {
+    await Socket.connect("192.168.0.104", 8080).then((serverSocket) {
+      serverSocket
+          .write('GET: logInChecker~${studentID.text}~${password.text}\u0000');
+      serverSocket.flush();
+      serverSocket.listen((socketResponse) {
+        setState(() {
+          response = String.fromCharCodes(socketResponse);
+        });
+      });
+    });
+    print("----------   server response is:  { $response }");
+
+    if (response == "401") {
+      userIDChecker = true;
+      passwordChecker = false;
+    } else if (response == "404") {
+      userIDChecker = false;
+      passwordChecker = false;
+    } else if (response == "200") {
+      userIDChecker = true;
+      passwordChecker = true;
+    }
+    return response;
   }
 }
